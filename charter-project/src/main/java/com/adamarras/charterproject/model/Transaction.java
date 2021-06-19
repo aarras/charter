@@ -7,11 +7,12 @@ import java.math.BigDecimal;
 import java.util.Calendar;
 
 @Entity
-@Table(name="transactions")
+@Table(name="Transaction")
 public class Transaction {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="id")
     private Long id;
 
     @Column(name="transaction_date")
@@ -33,9 +34,15 @@ public class Transaction {
 
     public Long getId() { return id; }
 
+    public void setId(Long id) { this.id = id; }
+
     public Calendar getTransactionDate() { return transactionDate; }
 
     public void setTransactionDate(Calendar transactionDate) { this.transactionDate = transactionDate; }
+
+    public BigDecimal getTransactionAmount() { return transactionAmount; }
+
+    public void setTransactionAmount(BigDecimal transactionAmount) { this.transactionAmount = transactionAmount; }
 
     public Customer getCustomer() { return customer; }
 
