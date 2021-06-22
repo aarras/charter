@@ -1,7 +1,5 @@
 package com.adamarras.charterproject.model;
 
-import org.hibernate.annotations.CreationTimestamp;
-
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Calendar;

@@ -45,8 +45,8 @@ public class TransactionController {
         }
     }
 
-    @GetMapping("/transactions-between/{id}/{start-date}/{end-date}")
-    public ResponseEntity<List<Transaction>> getAllTransactionsBetweenDates(@PathVariable("id") String id, @PathVariable("start-date") String startDate, @PathVariable("end-date") String endDate) {
+    @GetMapping("/transactions-between/{start-date}/{end-date}")
+    public ResponseEntity<List<Transaction>> getAllTransactionsBetweenDates(@PathVariable("start-date") String startDate, @PathVariable("end-date") String endDate) {
 
         long start = Long.parseLong(startDate);
         Calendar startCal = Calendar.getInstance();

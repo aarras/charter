@@ -1,53 +1,56 @@
 import React, { useState, useEffect } from "react";
 import CustomerDataService from "../Services/CustomerService";
 import TransactionDataService from "../Services/TransactionService";
-import DatePickerComponent from './DatePickerComponent';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
 const CustomerList = () => {
     const [customers, setCustomers] = useState([]);
-    const [transactions, setTransactions] = useState([]);
     const [startDate, setStartDate] = useState(new Date().getTime());
     const [endDate, setEndDate] = useState(new Date().getTime());
 
     useEffect(() => {
         retrieveCustomers();
-    }, []);
+        getTransactions();
+    }, [startDate], [endDate]);
 
     const retrieveCustomers = () => {
         CustomerDataService.getAll()
             .then(response => {
                 setCustomers(response.data);
                 console.log(response.data);
+                getTransactions();
+                // let sentArray = response.data;
+                // let customerWithTransactions = [];
 
-            let sentArray = response.data;
-            let newObject = {};
-
-            for (let cus of sentArray) {
-                const addObject = Object.assign(newObject, {
-                    [cus.id]: {
-                        firstName: cus.firstName,
-                        lastName: cus.lastName,
-                        transactions: getTransactions(cus.id, startDate, endDate)
-                    }
-                })
-            }
-
-            setTransactions({ ...transactions, newObject });
-            console.log(newObject);
+                // for (let customer of sentArray) {
+                //     customerWithTransactions.push({
+                //         id: customer.id,
+                //         firstName: customer.firstName,
+                //         lastName: customer.lastName,
+                //         transactions: TransactionDataService.getAllBetweenDates(customer.id, startDate, endDate)})
+                //         console.log(TransactionDataService.getAllBetweenDates(customer.id, startDate, endDate));
+                // }
+                // console.log(customerWithTransactions);
+                // setCustomers(customerWithTransactions);
             })
             .catch(e => {
                 console.log(e);
             });
     };
 
-    const getTransactions = (customerId, startDate, endDate) => {
-        TransactionDataService.getAllBetweenDates(customerId, startDate, endDate)
+    const getTransactions = () => {
+        TransactionDataService.getAllBetweenDates(startDate, endDate)
             .then(response => {
-                setTransactions(response.data);
                 console.log(response.data);
+                let sentArray = response.data;
+                for (let obj of sentArray) {
+                    console.log(customers[obj.customer.id]);
+                    console.log(customers);
+                    setCustomers({ ...customers, [obj.customer.id]: { ...customers[obj.customerid], transactions: obj }});
+                }
             })
+            .then(console.log(customers))
             .catch(e => {
                 console.log(e);
             });
@@ -55,7 +58,6 @@ const CustomerList = () => {
 
     return (
         <div className="mr-5">
-            {/* <DatePickerComponent /> */}
             <div className="row no-gutters" name="options">
                 <div className="col-md-auto no-gutters">
                     <p className="mb-0">Start Date</p>
@@ -85,11 +87,10 @@ const CustomerList = () => {
                 <tbody>
                     {customers && customers.map((customer) => (
                         <tr key={customer.id}>
-                            {getTransactions(customer.id, startDate, endDate)}
                             <td>{customer.id}</td>
                             <td>{customer.lastName}</td>
                             <td>{customer.firstName}</td>
-                            <td>{transactions}</td>
+                            {/* <td>{customer.transactions}</td> */}
                         </tr>
                     ))}
                 </tbody>
