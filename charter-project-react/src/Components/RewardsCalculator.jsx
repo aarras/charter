@@ -1,26 +1,28 @@
 import React, { useState } from "react";
+import { useEffect } from "react";
 import TransactionDataService from "../Services/TransactionService";
 
 const RewardsCalculator = ({ customerId, startDate, endDate }) => {
 
-    //const [transactions, setTransactions] = useState([]);
+    const [transactions, setTransactions] = useState([]);
+
+    useEffect(() => {
+        retrieveTransactions(customerId, startDate, endDate);
+    }, [customerId, startDate, endDate])
 
     const retrieveTransactions = (customerId, startDate, endDate) => {
         console.log(customerId);
         TransactionDataService.getAllBetweenDates(customerId, startDate, endDate)
             .then(response => {
                 console.log(response.data);
-                //setTransactions(response.data);
-                return rewardPoints(response.data);
-                //rewardPoints(response.data);
+                setTransactions(response.data);
             })
             .catch(e => {
                 console.log(e);
             });
     };
 
-    const rewardPoints = (transactions) => {
-        //let transactions = retrieveTransactions(customerId, startDate, endDate);
+    const rewardPoints = () => {
         let points = 0;
 
         if(transactions.length > 0) {
@@ -28,10 +30,9 @@ const RewardsCalculator = ({ customerId, startDate, endDate }) => {
 
             for(let transaction of transactions) {
                 points += transaction.transactionAmount;
-                console.log(points);
             }
-            return points;
         }
+        return points;
     }
 
     return (

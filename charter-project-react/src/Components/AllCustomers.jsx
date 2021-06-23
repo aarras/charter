@@ -25,23 +25,6 @@ const CustomerList = () => {
             .then(response => {
                 setCustomers(response.data);
                 console.log(response.data);
-
-                let tempCustomers = response.data
-                for(let item of tempCustomers) {
-                    let customerId = item.id;
-                    //getTransactions(customerId);
-                }
-            })
-            .catch(e => {
-                console.log(e);
-            });
-    };
-
-    const getTransactions = (customerId) => {
-        TransactionDataService.getAllBetweenDates(customerId, startDate, endDate)
-            .then(response => {
-                console.log(response.data);
-                setTransactions({ ...transactions, [customerId]: response.data })
             })
             .catch(e => {
                 console.log(e);
@@ -57,15 +40,6 @@ const CustomerList = () => {
         setEndDate(date.getTime());
         setRefreshCustomers(true);
     }
-
-    // const rewards = (customerId) => {
-
-
-
-
-
-    //     return <td>TESSSSSSSSSST</td>
-    // }
 
     return (
         <div className="mr-5">
@@ -103,7 +77,6 @@ const CustomerList = () => {
                             <td>{customer.lastName}</td>
                             <td>{customer.firstName}</td>
                             <RewardsCalculator 
-                                //transactions={getTransactions(customer.id)}
                                 customerId={customer.id}
                                 startDate={startDate}
                                 endDate={endDate} 
