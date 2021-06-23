@@ -23,16 +23,23 @@ const RewardsCalculator = ({ customerId, startDate, endDate }) => {
     };
 
     const rewardPoints = () => {
-        let points = 0;
 
         if(transactions.length > 0) {
-            console.log(points);
-
+            let points = 0;
             for(let transaction of transactions) {
-                points += transaction.transactionAmount;
+                let amount = transaction.transactionAmount;
+                
+                if(amount > 100) {
+                    points += 50;
+                    points += Math.floor(amount -100) * 2;
+                } else if (amount > 50) {
+                    points += Math.floor(amount) -50;
+                }
+
             }
+            return points;
         }
-        return points;
+        return 0;
     }
 
     return (
