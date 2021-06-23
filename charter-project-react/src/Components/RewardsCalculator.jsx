@@ -11,10 +11,8 @@ const RewardsCalculator = ({ customerId, startDate, endDate }) => {
     }, [customerId, startDate, endDate])
 
     const retrieveTransactions = (customerId, startDate, endDate) => {
-        console.log(customerId);
         TransactionDataService.getAllBetweenDates(customerId, startDate, endDate)
             .then(response => {
-                console.log(response.data);
                 setTransactions(response.data);
             })
             .catch(e => {
@@ -23,7 +21,6 @@ const RewardsCalculator = ({ customerId, startDate, endDate }) => {
     };
 
     const rewardPoints = () => {
-
         if(transactions.length > 0) {
             let points = 0;
             for(let transaction of transactions) {
@@ -35,17 +32,16 @@ const RewardsCalculator = ({ customerId, startDate, endDate }) => {
                 } else if (amount > 50) {
                     points += Math.floor(amount) -50;
                 }
-
-            }
+            } 
             return points;
+        } else {
+            return 0;
         }
-        return 0;
     }
 
     return (
         <td>{rewardPoints()}</td>
     );
-
 }
 
 export default RewardsCalculator;

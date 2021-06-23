@@ -1,30 +1,27 @@
 import React, { useState, useEffect } from "react";
 import CustomerDataService from "../Services/CustomerService";
-import TransactionDataService from "../Services/TransactionService";
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import RewardsCalculator from "./RewardsCalculator";
 
 const CustomerList = () => {
     const [customers, setCustomers] = useState([]);
-    const [transactions, setTransactions] = useState([]);
-    const [refreshCustomers, setRefreshCustomers] = useState(true);
+    const [refreshData, setRefreshData] = useState(true);
     const [startDate, setStartDate] = useState(new Date().getTime());
     const [endDate, setEndDate] = useState(new Date().getTime());
 
     useEffect(() => {
-        if(refreshCustomers == true) {
-            setRefreshCustomers(false);
+        if(refreshData == true) {
+            setRefreshData(false);
             retrieveCustomers();
         }
-    }, [refreshCustomers]);
+    }, [refreshData]);
 
     const retrieveCustomers = () => {
         
         CustomerDataService.getAll()
             .then(response => {
                 setCustomers(response.data);
-                console.log(response.data);
             })
             .catch(e => {
                 console.log(e);
@@ -33,16 +30,20 @@ const CustomerList = () => {
 
     const handleStartDateChange = (date) => {
         setStartDate(date.getTime());
-        setRefreshCustomers(true);
+        setRefreshData(true);
     }
 
     const handleEndDateChange = (date) => {
         setEndDate(date.getTime());
-        setRefreshCustomers(true);
+        setRefreshData(true);
+    }
+
+    const handleClick = (customerId) => {
+        window.location.href = "/customer/" + customerId;
     }
 
     return (
-        <div className="mr-5">
+        <div className="mt-4 mr-5">
             <div className="row no-gutters" name="options">
                 <div className="col-md-auto no-gutters">
                     <p className="mb-0">Start Date</p>
@@ -61,7 +62,8 @@ const CustomerList = () => {
                     />
                 </div>
             </div>
-            <table>
+            <div className="mt-5 font-weight-bold">Select a row for transaction history</div>
+            <table className="mt-2">
                 <thead>
                     <tr>
                         <td>ID</td>
@@ -72,14 +74,14 @@ const CustomerList = () => {
                 </thead>
                 <tbody>
                     {customers && customers.map((customer) => (
-                        <tr key={customer.id}>
+                        <tr key={customer.id} onClick={() => handleClick(customer.id)}>
                             <td>{customer.id}</td>
                             <td>{customer.lastName}</td>
                             <td>{customer.firstName}</td>
                             <RewardsCalculator 
                                 customerId={customer.id}
                                 startDate={startDate}
-                                endDate={endDate} 
+                                endDate={endDate}
                             />
                         </tr>
                     ))}
