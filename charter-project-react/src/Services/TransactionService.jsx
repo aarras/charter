@@ -1,8 +1,8 @@
 import http from "../http-common";
 
 
-const getAllBetweenDates = (startDate, endDate) => {
-    return http.get(`/transactions-between/${startDate}/${endDate}`)
+const getAllBetweenDates = (customerId, startDate, endDate) => {
+    return http.get(`/transactions-between/${customerId}/${startDate}/${endDate}`)
 }
 
 const getAllByCustomer = (customerId) => {

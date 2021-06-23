@@ -26,7 +26,9 @@ public class TransactionController {
     public CustomerRepository customerRepository;
 
     @GetMapping("/inputs")
-    public ResponseEntity<List<Transaction>> getAllTransactions(@RequestParam(required = false) Calendar transactionDate) {
+    public ResponseEntity<List<Transaction>> getAllTransactions(
+            @RequestParam(required = false) Calendar transactionDate) {
+
         try {
             List<Transaction> transactions = new ArrayList<Transaction>();
 
@@ -45,8 +47,11 @@ public class TransactionController {
         }
     }
 
-    @GetMapping("/transactions-between/{start-date}/{end-date}")
-    public ResponseEntity<List<Transaction>> getAllTransactionsBetweenDates(@PathVariable("start-date") String startDate, @PathVariable("end-date") String endDate) {
+    @GetMapping("/transactions-between/{id}/{start-date}/{end-date}")
+    public ResponseEntity<List<Transaction>> findTransactionByIdWithTransactionDateBetween(
+            @PathVariable("id") Long id,
+            @PathVariable("start-date") String startDate,
+            @PathVariable("end-date") String endDate) {
 
         long start = Long.parseLong(startDate);
         Calendar startCal = Calendar.getInstance();
@@ -59,7 +64,10 @@ public class TransactionController {
         try {
             List<Transaction> transactions = new ArrayList<Transaction>();
 
-            transactionRepository.findByTransactionDateBetween(startCal, endCal).forEach(transactions::add);
+            transactionRepository.findTransactionByIdWithTransactionDateBetween(
+                    id,
+                    startCal,
+                    endCal).forEach(transactions::add);
 
             if (transactions.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -72,7 +80,9 @@ public class TransactionController {
     }
 
     @GetMapping("/customer/{id}/transactions")
-    public ResponseEntity<List<Transaction>> getAllTransactionsByCustomer(@PathVariable("id") long id) {
+    public ResponseEntity<List<Transaction>> getAllTransactionsByCustomer(
+            @PathVariable("id") long id) {
+
         Optional<Customer> customerData = customerRepository.findById(id);
 
         try {

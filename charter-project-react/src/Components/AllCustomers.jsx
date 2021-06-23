@@ -3,58 +3,69 @@ import CustomerDataService from "../Services/CustomerService";
 import TransactionDataService from "../Services/TransactionService";
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import RewardsCalculator from "./RewardsCalculator";
 
 const CustomerList = () => {
     const [customers, setCustomers] = useState([]);
+    const [transactions, setTransactions] = useState([]);
+    const [refreshCustomers, setRefreshCustomers] = useState(true);
     const [startDate, setStartDate] = useState(new Date().getTime());
     const [endDate, setEndDate] = useState(new Date().getTime());
 
     useEffect(() => {
-        retrieveCustomers();
-        getTransactions();
-    }, [startDate], [endDate]);
+        if(refreshCustomers == true) {
+            setRefreshCustomers(false);
+            retrieveCustomers();
+        }
+    }, [refreshCustomers]);
 
     const retrieveCustomers = () => {
+        
         CustomerDataService.getAll()
             .then(response => {
                 setCustomers(response.data);
                 console.log(response.data);
-                getTransactions();
-                // let sentArray = response.data;
-                // let customerWithTransactions = [];
 
-                // for (let customer of sentArray) {
-                //     customerWithTransactions.push({
-                //         id: customer.id,
-                //         firstName: customer.firstName,
-                //         lastName: customer.lastName,
-                //         transactions: TransactionDataService.getAllBetweenDates(customer.id, startDate, endDate)})
-                //         console.log(TransactionDataService.getAllBetweenDates(customer.id, startDate, endDate));
-                // }
-                // console.log(customerWithTransactions);
-                // setCustomers(customerWithTransactions);
-            })
-            .catch(e => {
-                console.log(e);
-            });
-    };
-
-    const getTransactions = () => {
-        TransactionDataService.getAllBetweenDates(startDate, endDate)
-            .then(response => {
-                console.log(response.data);
-                let sentArray = response.data;
-                for (let obj of sentArray) {
-                    console.log(customers[obj.customer.id]);
-                    console.log(customers);
-                    setCustomers({ ...customers, [obj.customer.id]: { ...customers[obj.customerid], transactions: obj }});
+                let tempCustomers = response.data
+                for(let item of tempCustomers) {
+                    let customerId = item.id;
+                    //getTransactions(customerId);
                 }
             })
-            .then(console.log(customers))
             .catch(e => {
                 console.log(e);
             });
     };
+
+    const getTransactions = (customerId) => {
+        TransactionDataService.getAllBetweenDates(customerId, startDate, endDate)
+            .then(response => {
+                console.log(response.data);
+                setTransactions({ ...transactions, [customerId]: response.data })
+            })
+            .catch(e => {
+                console.log(e);
+            });
+    };
+
+    const handleStartDateChange = (date) => {
+        setStartDate(date.getTime());
+        setRefreshCustomers(true);
+    }
+
+    const handleEndDateChange = (date) => {
+        setEndDate(date.getTime());
+        setRefreshCustomers(true);
+    }
+
+    // const rewards = (customerId) => {
+
+
+
+
+
+    //     return <td>TESSSSSSSSSST</td>
+    // }
 
     return (
         <div className="mr-5">
@@ -64,7 +75,7 @@ const CustomerList = () => {
                     <DatePicker 
                         className="mr-3"
                         selected={startDate}
-                        onChange={(date) => setStartDate(date.getTime())}
+                        onChange={(date) => handleStartDateChange(date)}
                     />
                 </div>
                 <div className="col-md-auto no-gutters">
@@ -72,7 +83,7 @@ const CustomerList = () => {
                     <DatePicker 
                         className="mr-3"
                         selected={endDate}
-                        onChange={(date) => setEndDate(date.getTime())}
+                        onChange={(date) => handleEndDateChange(date)}
                     />
                 </div>
             </div>
@@ -82,6 +93,7 @@ const CustomerList = () => {
                         <td>ID</td>
                         <td>Last Name</td>
                         <td>First Name</td>
+                        <td>Reward Points</td>
                     </tr>
                 </thead>
                 <tbody>
@@ -90,7 +102,12 @@ const CustomerList = () => {
                             <td>{customer.id}</td>
                             <td>{customer.lastName}</td>
                             <td>{customer.firstName}</td>
-                            {/* <td>{customer.transactions}</td> */}
+                            <RewardsCalculator 
+                                //transactions={getTransactions(customer.id)}
+                                customerId={customer.id}
+                                startDate={startDate}
+                                endDate={endDate} 
+                            />
                         </tr>
                     ))}
                 </tbody>
